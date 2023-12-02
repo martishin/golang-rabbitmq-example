@@ -4,11 +4,16 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-func main() {
+const (
+	sleepOnFailure = 5 * time.Second
+)
+
+func consume() error {
 	rabbitMqAddr := os.Getenv("RABBITMQ_ADDR")
 	if rabbitMqAddr == "" {
 		rabbitMqAddr = "localhost:5672"
@@ -16,8 +21,8 @@ func main() {
 
 	conn, dialErr := amqp.Dial(fmt.Sprintf("amqp://guest:guest@%s", rabbitMqAddr))
 	if dialErr != nil {
-		log.Println(dialErr)
-		return
+		time.Sleep(sleepOnFailure)
+		return dialErr
 	}
 	defer conn.Close()
 
@@ -25,8 +30,7 @@ func main() {
 
 	ch, connErr := conn.Channel()
 	if connErr != nil {
-		log.Println(connErr)
-		return
+		return connErr
 	}
 	defer ch.Close()
 
@@ -40,8 +44,7 @@ func main() {
 		nil,
 	)
 	if consumeErr != nil {
-		log.Println(consumeErr)
-		return
+		return consumeErr
 	}
 
 	forever := make(chan bool)
@@ -51,4 +54,13 @@ func main() {
 		}
 	}()
 	<-forever
+
+	return nil
+}
+
+func main() {
+	err := consume()
+	if err != nil {
+		log.Fatal(err)
+	}
 }

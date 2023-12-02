@@ -11,11 +11,12 @@ import (
 )
 
 const (
-	timeoutInSeconds = 5
-	message          = "Hello World"
+	timeout        = 5 * time.Second
+	sleepOnFailure = 5 * time.Second
+	message        = "Hello World"
 )
 
-func main() {
+func produce() error {
 	rabbitMqAddr := os.Getenv("RABBITMQ_ADDR")
 	if rabbitMqAddr == "" {
 		rabbitMqAddr = "localhost:5672"
@@ -23,8 +24,8 @@ func main() {
 
 	conn, dialErr := amqp.Dial(fmt.Sprintf("amqp://guest:guest@%s", rabbitMqAddr))
 	if dialErr != nil {
-		log.Println(dialErr)
-		return
+		time.Sleep(sleepOnFailure)
+		return dialErr
 	}
 	defer conn.Close()
 
@@ -32,8 +33,7 @@ func main() {
 
 	ch, connErr := conn.Channel()
 	if connErr != nil {
-		log.Println(connErr)
-		return
+		return connErr
 	}
 	defer ch.Close()
 
@@ -48,11 +48,10 @@ func main() {
 	log.Println(q)
 
 	if queueErr != nil {
-		log.Println(queueErr)
-		return
+		return queueErr
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeoutInSeconds*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
 	ticker := time.NewTicker(1 * time.Second)
@@ -72,9 +71,17 @@ func main() {
 		)
 
 		if publishErr != nil {
-			log.Println(publishErr)
-			return
+			return publishErr
 		}
-		log.Printf("Successfully published message: %s\n", message)
+		log.Printf("Published message: %s\n", message)
+	}
+
+	return nil
+}
+
+func main() {
+	err := produce()
+	if err != nil {
+		log.Fatal(err)
 	}
 }

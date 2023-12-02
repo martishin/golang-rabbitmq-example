@@ -2,7 +2,8 @@ version: '3.8'
 
 services:
     producer:
-        image: golang-redis-example-producer
+        image: golang-rabbitmq-example-producer
+        restart: on-failure
         build:
             context: .
             dockerfile: Dockerfile.producer
@@ -11,7 +12,8 @@ services:
         depends_on:
             - rabbitmq
     consumer:
-        image: golang-redis-example-consumer
+        image: golang-rabbitmq-example-consumer
+        restart: on-failure
         build:
             context: .
             dockerfile: Dockerfile.consumer
@@ -21,7 +23,6 @@ services:
             - rabbitmq
     rabbitmq:
         image: rabbitmq:3-management
-        restart: always
         ports:
             - "5672:5672"
             - "15672:15672"
