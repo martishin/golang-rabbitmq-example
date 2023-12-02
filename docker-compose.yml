@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+    producer:
+        image: golang-redis-example-producer
+        build:
+            context: .
+            dockerfile: Dockerfile.producer
+        environment:
+            - RABBITMQ_ADDR=rabbitmq:5672
+        depends_on:
+            - rabbitmq
+    consumer:
+        image: golang-redis-example-consumer
+        build:
+            context: .
+            dockerfile: Dockerfile.consumer
+        environment:
+            - RABBITMQ_ADDR=rabbitmq:5672
+        depends_on:
+            - rabbitmq
+    rabbitmq:
+        image: rabbitmq:3-management
+        restart: always
+        ports:
+            - "5672:5672"
+            - "15672:15672"
