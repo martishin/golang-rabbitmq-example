@@ -40,5 +40,5 @@ out/
 *.pb.go
 
 # Binary
-consumer
-producer
+consumer/consumer
+producer/producer
