@@ -57,7 +57,9 @@ func produce() error {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
+	id := 0
 	for range ticker.C {
+		msg := fmt.Sprintf("%s: %d", message, id)
 		publishErr := ch.PublishWithContext(
 			ctx,
 			"",
@@ -66,14 +68,15 @@ func produce() error {
 			false,
 			amqp.Publishing{
 				ContentType: "text/plain",
-				Body:        []byte(message),
+				Body:        []byte(msg),
 			},
 		)
 
 		if publishErr != nil {
 			return publishErr
 		}
-		log.Printf("Published message: %s\n", message)
+		log.Printf("Published message: %s\n", msg)
+		id++
 	}
 
 	return nil
