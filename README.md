@@ -7,5 +7,6 @@ RabbitMQ usage example in Go
 
 ## Technologies Used
 * [Go](https://go.dev/)
+* [amqp091-go](https://github.com/rabbitmq/amqp091-go)
 * [RabbitMQ](https://www.rabbitmq.com/)
 * [Docker](https://www.docker.com/)
