@@ -11,7 +11,17 @@ services:
             - RABBITMQ_ADDR=rabbitmq:5672
         depends_on:
             - rabbitmq
-    consumer:
+    consumer-1:
+        image: golang-rabbitmq-example-consumer
+        restart: on-failure
+        build:
+            context: .
+            dockerfile: Dockerfile.consumer
+        environment:
+            - RABBITMQ_ADDR=rabbitmq:5672
+        depends_on:
+            - rabbitmq
+    consumer-2:
         image: golang-rabbitmq-example-consumer
         restart: on-failure
         build:

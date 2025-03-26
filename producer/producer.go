@@ -13,7 +13,6 @@ import (
 const (
 	timeout        = 5 * time.Second
 	sleepOnFailure = 5 * time.Second
-	message        = "Hello World"
 )
 
 func produce() error {
@@ -54,12 +53,12 @@ func produce() error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	ticker := time.NewTicker(1 * time.Second)
+	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
 
 	id := 0
 	for range ticker.C {
-		msg := fmt.Sprintf("%s: %d", message, id)
+		msg := fmt.Sprintf("User %d initialized payment", id)
 		publishErr := ch.PublishWithContext(
 			ctx,
 			"",

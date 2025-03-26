@@ -50,7 +50,8 @@ func consume() error {
 	forever := make(chan bool)
 	go func() {
 		for msg := range msgs {
-			log.Printf("Recieved message: %s\n", msg.Body)
+			log.Printf("Recieved message: %s, PROCESSING PAYMENT...\n", msg.Body)
+			time.Sleep(8 * time.Second)
 		}
 	}()
 	<-forever
