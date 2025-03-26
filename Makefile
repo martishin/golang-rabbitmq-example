@@ -1,7 +1,6 @@
 build:
 	golangci-lint run
-	docker build -t golang-rabbitmq-example-producer -f Dockerfile.producer .
-	docker build -t golang-rabbitmq-example-consumer -f Dockerfile.consumer .
+	docker compose build --no-cache
 
 run:
-	docker-compose up
+	docker compose up
